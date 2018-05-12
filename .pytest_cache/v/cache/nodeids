@@ -1,0 +1,3 @@
+[
+  "tests/test_s3_media_storage.py::TestS3Storage::test_it_allow_store_files"
+]
