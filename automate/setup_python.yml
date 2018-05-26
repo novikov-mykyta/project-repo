@@ -1,0 +1,38 @@
+---
+- hosts: localhost
+  vars:
+    os_packages:
+      - python36
+      - python36-pip
+      - git
+      - tree
+      - mc
+    bucket_name: "nikintan-project-bucket"
+    python_dependencies:
+      - boto3
+      - pytest
+      - flask
+  tasks:
+    - name: "Install os packages"
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items: "{{ os_packages }}"
+      become: yes
+    - name: "sync my repo"
+      git:
+        repo: https://github.com/novikov-mykyta/project-repo
+        dest: ~/project
+        update: no
+    - name: "ensure env is configured"
+      lineinfile:
+        path: ~/.bashrc
+        line: "export APP_BUCKET_NAME={{bucket_name}}"
+    - name: "configure git"
+      raw: git config --global user.name "Mykyta Novikov"
+    - raw: git config --global user.email "mykytanovikov@gmail.com"
+    - pip:
+        name: "{{ item }}"
+        executable: pip-3.6
+      with_items: "{{ python_dependencies }}"
+      become: yes
